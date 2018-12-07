@@ -33,59 +33,64 @@ import com.talk2amareswaran.projects.socialloginapp.service.ConnectionSignUpImpl
 public class SocialConfig implements SocialConfigurer {
 
 	@Autowired
-    private DataSource dataSource;
+	private DataSource dataSource;
 	@Autowired
-    private AppUserDAO appUserDAO;
-	
-	private boolean autoSignUp = false;  
-    
+	private AppUserDAO appUserDAO;
+
+	private boolean autoSignUp = false;
+
 	@Override
-    public void addConnectionFactories(ConnectionFactoryConfigurer cfConfig, Environment env) {
-        try {
-            this.autoSignUp = Boolean.parseBoolean(env.getProperty("social.auto-signup"));
-        } catch (Exception e) {
-            this.autoSignUp = false;
-        }
-        
-        FacebookConnectionFactory ffactory = new FacebookConnectionFactory(env.getProperty("facebook.app.id"), env.getProperty("facebook.app.secret"));
-        ffactory.setScope(env.getProperty("facebook.scope"));
-        cfConfig.addConnectionFactory(ffactory);
-        
-        GoogleConnectionFactory gfactory = new GoogleConnectionFactory(env.getProperty("google.client.id"), env.getProperty("google.client.secret"));
-        gfactory.setScope(env.getProperty("google.scope"));
-        cfConfig.addConnectionFactory(gfactory);
-        
-        LinkedInConnectionFactory lfactory = new LinkedInConnectionFactory(env.getProperty("linkedin.consumer.key"), env.getProperty("linkedin.consumer.secret"));
-        lfactory.setScope(env.getProperty("linkedin.scope"));
-        cfConfig.addConnectionFactory(lfactory);
-        
-        TwitterConnectionFactory tfactory = new TwitterConnectionFactory(env.getProperty("twitter.consumer.key"), env.getProperty("twitter.consumer.secret"));
-        cfConfig.addConnectionFactory(tfactory);
- 
- 
+	public void addConnectionFactories(ConnectionFactoryConfigurer cfConfig, Environment env) {
+		try {
+			this.autoSignUp = Boolean.parseBoolean(env.getProperty("social.auto-signup"));
+		} catch (Exception e) {
+			this.autoSignUp = false;
+		}
+
+		FacebookConnectionFactory ffactory = new FacebookConnectionFactory(env.getProperty("facebook.app.id"),
+				env.getProperty("facebook.app.secret"));
+		ffactory.setScope(env.getProperty("facebook.scope"));
+		cfConfig.addConnectionFactory(ffactory);
+
+		GoogleConnectionFactory gfactory = new GoogleConnectionFactory(env.getProperty("google.client.id"),
+				env.getProperty("google.client.secret"));
+		gfactory.setScope(env.getProperty("google.scope"));
+		cfConfig.addConnectionFactory(gfactory);
+
+		LinkedInConnectionFactory lfactory = new LinkedInConnectionFactory(env.getProperty("linkedin.consumer.key"),
+				env.getProperty("linkedin.consumer.secret"));
+		lfactory.setScope(env.getProperty("linkedin.scope"));
+		cfConfig.addConnectionFactory(lfactory);
+
+		TwitterConnectionFactory tfactory = new TwitterConnectionFactory(env.getProperty("twitter.consumer.key"),
+				env.getProperty("twitter.consumer.secret"));
+		cfConfig.addConnectionFactory(tfactory);
+
 	}
-	
+
 	@Override
 	public UserIdSource getUserIdSource() {
 		return new AuthenticationNameUserIdSource();
 	}
-	
+
 	@Override
-    public UsersConnectionRepository getUsersConnectionRepository(ConnectionFactoryLocator connectionFactoryLocator) {
-        JdbcUsersConnectionRepository usersConnectionRepository = new JdbcUsersConnectionRepository(dataSource,connectionFactoryLocator,Encryptors.noOpText());
-  
-        if (autoSignUp) {
-            ConnectionSignUp connectionSignUp = new ConnectionSignUpImpl(appUserDAO);
-            usersConnectionRepository.setConnectionSignUp(connectionSignUp);
-        } else {
-            usersConnectionRepository.setConnectionSignUp(null);
-        }
-        return usersConnectionRepository;
-    }
-	
-    @Bean
-    public ConnectController connectController(ConnectionFactoryLocator connectionFactoryLocator,  ConnectionRepository connectionRepository) {
-        return new ConnectController(connectionFactoryLocator, connectionRepository);
-    }
-	
+	public UsersConnectionRepository getUsersConnectionRepository(ConnectionFactoryLocator connectionFactoryLocator) {
+		JdbcUsersConnectionRepository usersConnectionRepository = new JdbcUsersConnectionRepository(dataSource,
+				connectionFactoryLocator, Encryptors.noOpText());
+
+		if (autoSignUp) {
+			ConnectionSignUp connectionSignUp = new ConnectionSignUpImpl(appUserDAO);
+			usersConnectionRepository.setConnectionSignUp(connectionSignUp);
+		} else {
+			usersConnectionRepository.setConnectionSignUp(null);
+		}
+		return usersConnectionRepository;
+	}
+
+	@Bean
+	public ConnectController connectController(ConnectionFactoryLocator connectionFactoryLocator,
+			ConnectionRepository connectionRepository) {
+		return new ConnectController(connectionFactoryLocator, connectionRepository);
+	}
+
 }

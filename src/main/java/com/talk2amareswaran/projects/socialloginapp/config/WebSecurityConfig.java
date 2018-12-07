@@ -30,19 +30,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().antMatchers("/userInfo").access("hasRole('" + AppRole.ROLE_USER + "')");
 		http.authorizeRequests().antMatchers("/admin").access("hasRole('" + AppRole.ROLE_ADMIN + "')");
 		http.authorizeRequests().and().exceptionHandling().accessDeniedPage("/403");
-		http.authorizeRequests().and().formLogin()
-				.loginProcessingUrl("/j_spring_security_check") 
-				.loginPage("/login")
-				.defaultSuccessUrl("/userInfo")
-				.failureUrl("/login?error=true")
-				.usernameParameter("username")
+		http.authorizeRequests().and().formLogin().loginProcessingUrl("/j_spring_security_check").loginPage("/login")
+				.defaultSuccessUrl("/userInfo").failureUrl("/login?error=true").usernameParameter("username")
 				.passwordParameter("password");
 		http.authorizeRequests().and().logout().logoutUrl("/logout").logoutSuccessUrl("/");
 		http.apply(new SpringSocialConfigurer()).signupUrl("/signup");
 	}
 
-    @Override
-    public UserDetailsService userDetailsService() {
-        return userDetailsService;
-    }
+	@Override
+	public UserDetailsService userDetailsService() {
+		return userDetailsService;
+	}
 }
